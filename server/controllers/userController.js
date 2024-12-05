@@ -36,11 +36,9 @@ export const updateProfile = async (req, res) => {
       updates.profilePic = result.secure_url;
     }
 
-    const user = await User.findByIdAndUpdate(
-      req.user._id,
-      updates,
-      { new: true }
-    ).select("-password");
+    const user = await User.findByIdAndUpdate(req.user._id, updates, {
+      new: true,
+    }).select("-password");
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -57,13 +55,13 @@ export const blockUser = async (req, res) => {
   try {
     const { userId } = req.params;
     const user = await User.findById(req.user._id);
-    
+
     if (user.blockedUsers.includes(userId)) {
       return res.status(400).json({ message: "User is already blocked" });
     }
 
     user.blockedUsers.push(userId);
-    user.friends = user.friends.filter(id => id.toString() !== userId);
+    user.friends = user.friends.filter((id) => id.toString() !== userId);
     await user.save();
 
     res.json({ message: "User blocked successfully" });
@@ -83,8 +81,10 @@ export const removeFriend = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    user.friends = user.friends.filter(id => id.toString() !== friendId);
-    friend.friends = friend.friends.filter(id => id.toString() !== req.user._id.toString());
+    user.friends = user.friends.filter((id) => id.toString() !== friendId);
+    friend.friends = friend.friends.filter(
+      (id) => id.toString() !== req.user._id.toString()
+    );
 
     await Promise.all([user.save(), friend.save()]);
 
@@ -92,5 +92,82 @@ export const removeFriend = async (req, res) => {
   } catch (error) {
     console.error("Remove friend error:", error);
     res.status(500).json({ message: "Failed to remove friend" });
+  }
+};
+
+export const sendFriendRequest = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const sender = await User.findById(req.user._id);
+    const receiver = await User.findById(userId);
+
+    if (!receiver) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (sender.friends.includes(userId)) {
+      return res.status(400).json({ message: "Already friends" });
+    }
+
+    if (sender.sentFriendRequests.includes(userId)) {
+      return res.status(400).json({ message: "Friend request already sent" });
+    }
+
+    sender.sentFriendRequests.push(userId);
+    receiver.pendingFriendRequests.push(req.user._id);
+
+    await sender.save();
+    await receiver.save();
+
+    res.json({ message: "Friend request sent" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const acceptFriendRequest = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const receiver = await User.findById(req.user._id);
+    const sender = await User.findById(userId);
+
+    if (!sender) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    receiver.pendingFriendRequests.pull(userId);
+    sender.sentFriendRequests.pull(req.user._id);
+
+    receiver.friends.push(userId);
+    sender.friends.push(req.user._id);
+
+    await receiver.save();
+    await sender.save();
+
+    res.json({ message: "Friend request accepted" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const rejectFriendRequest = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const receiver = await User.findById(req.user._id);
+    const sender = await User.findById(userId);
+
+    if (!sender) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    receiver.pendingFriendRequests.pull(userId);
+    sender.sentFriendRequests.pull(req.user._id);
+
+    await receiver.save();
+    await sender.save();
+
+    res.json({ message: "Friend request rejected" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
