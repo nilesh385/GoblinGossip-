@@ -1,5 +1,10 @@
 import User from "../models/User.js";
 import cloudinary from "../config/cloudinary.js";
+import fs from "fs/promises";
+import jwt from "jsonwebtoken";
+import config from "../config/env.js";
+
+const JWT_SECRET = config.jwtSecret;
 
 export const searchUsers = async (req, res) => {
   try {
@@ -34,6 +39,7 @@ export const updateProfile = async (req, res) => {
         transformation: [{ width: 500, height: 500, crop: "fill" }],
       });
       updates.profilePic = result.secure_url;
+      fs.unlink(req.file.path);
     }
 
     const user = await User.findByIdAndUpdate(req.user._id, updates, {
@@ -43,8 +49,9 @@ export const updateProfile = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+    const token = jwt.sign({ userId: user._id }, JWT_SECRET);
 
-    res.json(user);
+    return res.json({ user, token });
   } catch (error) {
     console.error("Update profile error:", error);
     res.status(500).json({ message: "Failed to update profile" });
@@ -166,7 +173,35 @@ export const rejectFriendRequest = async (req, res) => {
     await receiver.save();
     await sender.save();
 
-    res.json({ message: "Friend request rejected" });
+    return res.json({ message: "Friend request rejected" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getAllFriends = async (req, res) => {
+  try {
+    // const friends = await User.findById(req.user._id).populate(
+    //   "friends",
+    //   "username fullName profilePic"
+    // );
+    const user = await User.findById(req.user._id);
+    const friends = await User.find({ _id: { $in: user.friends } }).select(
+      "username fullName profilePic"
+    );
+    return res.json(friends);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getFriendRequests = async (req, res) => {
+  try {
+    const friendRequests = await User.findById(req.user._id).populate(
+      "pendingFriendRequests",
+      "username fullName profilePic"
+    );
+    return res.json(friendRequests);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

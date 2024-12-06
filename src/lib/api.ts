@@ -7,33 +7,30 @@ const api = axios.create({
 // Request interceptor for authentication
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("auth-token");
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+  } else {
+    console.log(token);
   }
   return config;
 });
 
-// Response interceptor for error handling
-api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem("auth-token");
-      window.location.href = "/login";
-    }
-    return Promise.reject(error);
-  }
-);
-
 export const auth = {
   login: async (data: { emailOrUsername: string; password: string }) => {
-    const response = await api.post("/api/auth/login", data);
+    const response = await api.post("/api/auth/login", data, {
+      headers: { "Content-Type": "application/json" },
+    });
     return response.data;
   },
   signup: async (data: FormData) => {
     const response = await api.post("/api/auth/signup", data, {
       headers: { "Content-Type": "multipart/form-data" },
     });
+    return response.data;
+  },
+  validateToken: async () => {
+    const response = await api.get("/api/auth/validate-user");
     return response.data;
   },
 };
@@ -59,7 +56,7 @@ export const messages = {
   },
 };
 
-export const conversations = {
+export const conversations_api = {
   getAll: async () => {
     const response = await api.get("/api/conversations");
     return response.data;
@@ -76,9 +73,7 @@ export const conversations = {
 
 export const users = {
   updateProfile: async (data: FormData) => {
-    const response = await api.patch("/api/users/profile", data, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    const response = await api.patch("/api/users/profile", data);
     return response.data;
   },
   searchUsers: async (query: string) => {
@@ -107,6 +102,14 @@ export const users = {
   },
   blockUser: async (userId: string) => {
     const response = await api.post(`/api/users/block/${userId}`);
+    return response.data;
+  },
+  getPendingFriendRequests: async () => {
+    const response = await api.get(`/api/users/pending-friend-requests`);
+    return response.data;
+  },
+  getAllFriends: async () => {
+    const response = await api.get(`/api/users/all-friends`);
     return response.data;
   },
 };

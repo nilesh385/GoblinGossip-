@@ -9,6 +9,8 @@ import {
   rejectFriendRequest,
   removeFriend,
   blockUser,
+  getAllFriends,
+  getFriendRequests,
 } from "../controllers/userController.js";
 
 const router = express.Router();
@@ -16,6 +18,8 @@ const router = express.Router();
 router.use(authenticateUser);
 
 router.get("/search", searchUsers);
+router.get("/all-friends", getAllFriends);
+router.get("/pending-friend-requests", getFriendRequests);
 router.post("/friend-request/:userId", sendFriendRequest);
 router.post("/friend-request/:userId/accept", acceptFriendRequest);
 router.post("/friend-request/:userId/reject", rejectFriendRequest);

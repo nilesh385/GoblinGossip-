@@ -15,8 +15,11 @@ export const signup = async (req, res) => {
     });
 
     if (existingUser) {
-      return res.status(400).json({ 
-        message: existingUser.email === email ? "Email already in use" : "Username already taken" 
+      return res.status(400).json({
+        message:
+          existingUser.email === email
+            ? "Email already in use"
+            : "Username already taken",
       });
     }
 
@@ -32,7 +35,9 @@ export const signup = async (req, res) => {
         profilePicUrl = result.secure_url;
       } catch (uploadError) {
         console.error("Cloudinary upload error:", uploadError);
-        return res.status(500).json({ message: "Failed to upload profile picture" });
+        return res
+          .status(500)
+          .json({ message: "Failed to upload profile picture" });
       }
     }
 
@@ -48,10 +53,11 @@ export const signup = async (req, res) => {
     await newUser.save();
 
     const token = jwt.sign({ userId: newUser._id }, JWT_SECRET);
-    
+
     // Exclude password from response
     const userResponse = newUser.toObject();
     delete userResponse.password;
+    console.log("User Signed-up=>>>>>>>>>>>>> ", userResponse);
 
     res.status(201).json({ token, user: userResponse });
   } catch (error) {
@@ -78,10 +84,11 @@ export const login = async (req, res) => {
     }
 
     const token = jwt.sign({ userId: user._id }, JWT_SECRET);
-    
+
     // Exclude password from response
     const userResponse = user.toObject();
     delete userResponse.password;
+    console.log("User Logged-in Successfully=>>>>>>>>>>>>> ", userResponse);
 
     res.json({ token, user: userResponse });
   } catch (error) {
@@ -98,6 +105,6 @@ export const validateToken = async (req, res) => {
     }
     res.json({ user });
   } catch (error) {
-    res.status(500).json({ message: "Server error during token validation" });
+    res.status(500).json({ message: error.message });
   }
 };

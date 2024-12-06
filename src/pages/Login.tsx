@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { LoginFormData, loginSchema } from '@/lib/validators';
-import { auth } from '@/lib/api';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { LoginFormData, loginSchema } from "@/lib/validators";
+import { auth } from "@/lib/api";
 import {
   Form,
   FormControl,
@@ -11,24 +11,24 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { toast } from 'sonner';
-import useAuthStore from '@/store/authStore';
-import { initializeSocket } from '@/lib/socket';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { toast } from "sonner";
+import useAuthStore from "@/store/authStore";
+import { initializeSocket } from "@/lib/socket";
 
 const Login = () => {
   const navigate = useNavigate();
   const setAuth = useAuthStore((state) => state.setAuth);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      emailOrUsername: '',
-      password: '',
+      emailOrUsername: "",
+      password: "",
     },
   });
 
@@ -38,10 +38,11 @@ const Login = () => {
       const response = await auth.login(data);
       setAuth(response.user, response.token);
       initializeSocket(response.token);
-      toast.success('Logged in successfully');
-      navigate('/');
+      localStorage.setItem("auth-token", response.token);
+      toast.success("Logged in successfully");
+      navigate("/");
     } catch (error) {
-      toast.error('Invalid credentials');
+      toast.error("Invalid credentials");
     } finally {
       setIsLoading(false);
     }
@@ -85,15 +86,15 @@ const Login = () => {
               />
 
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? 'Logging in...' : 'Log in'}
+                {isLoading ? "Logging in..." : "Log in"}
               </Button>
 
               <p className="text-center text-sm text-muted-foreground">
-                Don't have an account?{' '}
+                Don't have an account?{" "}
                 <Button
                   variant="link"
                   className="p-0"
-                  onClick={() => navigate('/signup')}
+                  onClick={() => navigate("/signup")}
                 >
                   Sign up
                 </Button>

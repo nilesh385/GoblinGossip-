@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { SignupFormData, signupSchema } from '@/lib/validators';
-import { auth } from '@/lib/api';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { SignupFormData, signupSchema } from "@/lib/validators";
+import { auth } from "@/lib/api";
 import {
   Form,
   FormControl,
@@ -11,28 +11,31 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { toast } from 'sonner';
-import { Upload } from 'lucide-react';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { toast } from "sonner";
+import { Upload } from "lucide-react";
+import useAuthStore from "@/store/authStore";
+import { initializeSocket } from "@/lib/socket";
 
 const Signup = () => {
+  const { setAuth } = useAuthStore();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [profilePic, setProfilePic] = useState<File | null>(null);
-  
+
   const form = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
-      email: '',
-      username: '',
-      fullName: '',
-      password: '',
-      confirmPassword: '',
-      bio: '',
+      email: "",
+      username: "",
+      fullName: "",
+      password: "",
+      confirmPassword: "",
+      bio: "",
     },
   });
 
@@ -49,16 +52,20 @@ const Signup = () => {
       Object.entries(data).forEach(([key, value]) => {
         if (value) formData.append(key, value);
       });
-      
+
       if (profilePic) {
-        formData.append('profilePic', profilePic);
+        formData.append("profilePic", profilePic);
       }
 
-      await auth.signup(formData);
-      toast.success('Account created successfully');
-      navigate('/login');
+      const response = await auth.signup(formData);
+      setAuth(response.user, response.token);
+      initializeSocket(response.token);
+      localStorage.setItem("auth-token", response.token);
+
+      toast.success("Account created successfully");
+      navigate("/");
     } catch (error) {
-      toast.error('Failed to create account');
+      toast.error("Failed to create account");
     } finally {
       setIsLoading(false);
     }
@@ -128,11 +135,13 @@ const Signup = () => {
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => document.getElementById('profilePic')?.click()}
+                    onClick={() =>
+                      document.getElementById("profilePic")?.click()
+                    }
                     className="w-full"
                   >
                     <Upload className="w-4 h-4 mr-2" />
-                    {profilePic ? profilePic.name : 'Upload Profile Picture'}
+                    {profilePic ? profilePic.name : "Upload Profile Picture"}
                   </Button>
                 </div>
               </div>
@@ -180,15 +189,15 @@ const Signup = () => {
               />
 
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? 'Creating account...' : 'Sign up'}
+                {isLoading ? "Creating account..." : "Sign up"}
               </Button>
 
               <p className="text-center text-sm text-muted-foreground">
-                Already have an account?{' '}
+                Already have an account?{" "}
                 <Button
                   variant="link"
                   className="p-0"
-                  onClick={() => navigate('/login')}
+                  onClick={() => navigate("/login")}
                 >
                   Log in
                 </Button>

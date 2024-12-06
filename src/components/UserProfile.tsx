@@ -1,8 +1,7 @@
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import axios from 'axios';
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import {
   Form,
   FormControl,
@@ -10,22 +9,25 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Textarea } from './ui/textarea';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { toast } from 'sonner';
-import { Upload } from 'lucide-react';
-import useAuthStore from '@/store/authStore';
+} from "@/components/ui/form";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { toast } from "sonner";
+import { Loader2, Upload } from "lucide-react";
+import useAuthStore from "@/store/authStore";
+import { users } from "@/lib/api";
 
 const profileSchema = z.object({
-  fullName: z.string().min(2, 'Full name must be at least 2 characters'),
+  fullName: z.string().min(2, "Full name must be at least 2 characters"),
   bio: z.string(),
 });
 
 export const UserProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const [profilePic, setProfilePic] = useState<File | null>(null);
   const user = useAuthStore((state) => state.user);
   const token = useAuthStore((state) => state.token);
@@ -34,8 +36,8 @@ export const UserProfile = () => {
   const form = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      fullName: user?.fullName || '',
-      bio: user?.bio || '',
+      fullName: user?.fullName || "",
+      bio: user?.bio || "",
     },
   });
 
@@ -47,31 +49,25 @@ export const UserProfile = () => {
 
   const onSubmit = async (data: z.infer<typeof profileSchema>) => {
     try {
+      setLoading(true);
       const formData = new FormData();
       Object.entries(data).forEach(([key, value]) => {
         formData.append(key, value);
       });
-      
+
       if (profilePic) {
-        formData.append('profilePic', profilePic);
+        formData.append("profilePic", profilePic);
       }
 
-      const response = await axios.patch(
-        'http://localhost:3000/api/users/profile',
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      );
+      const response = await users.updateProfile(formData);
 
-      setAuth(response.data, token!);
+      setAuth(response.data, response.token!);
       setIsEditing(false);
-      toast.success('Profile updated successfully');
+      toast.success("Profile updated successfully");
     } catch (error) {
-      toast.error('Failed to update profile');
+      toast.error("Failed to update profile");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -132,17 +128,19 @@ export const UserProfile = () => {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => document.getElementById('profilePic')?.click()}
+                  onClick={() => document.getElementById("profilePic")?.click()}
                   className="w-full"
                 >
                   <Upload className="w-4 h-4 mr-2" />
-                  {profilePic ? profilePic.name : 'Upload Image'}
+                  {profilePic ? profilePic.name : "Upload Image"}
                 </Button>
               </div>
             </div>
 
             <div className="flex gap-2">
-              <Button type="submit">Save</Button>
+              <Button type="submit" disabled={loading}>
+                {loading ? <Loader2 className="mr-2 animate-spin" /> : "Update"}
+              </Button>
               <Button
                 type="button"
                 variant="outline"
@@ -157,7 +155,7 @@ export const UserProfile = () => {
         <div className="space-y-4">
           <div>
             <h2 className="text-lg font-semibold mb-2">Bio</h2>
-            <p className="text-muted-foreground">{user?.bio || 'No bio yet'}</p>
+            <p className="text-muted-foreground">{user?.bio || "No bio yet"}</p>
           </div>
           <Button onClick={() => setIsEditing(true)}>Edit Profile</Button>
         </div>
