@@ -30,7 +30,6 @@ export const UserProfile = () => {
 
   const [profilePic, setProfilePic] = useState<File | null>(null);
   const user = useAuthStore((state) => state.user);
-  const token = useAuthStore((state) => state.token);
   const setAuth = useAuthStore((state) => state.setAuth);
 
   const form = useForm<z.infer<typeof profileSchema>>({

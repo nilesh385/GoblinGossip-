@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { UserPlus, Check, X } from "lucide-react";
+import { UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import useAuthStore from "@/store/authStore";
 

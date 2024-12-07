@@ -1,23 +1,23 @@
-import { useState } from 'react';
-import { Sidebar } from '@/components/Sidebar';
-import { ChatLayout } from '@/components/chat/ChatLayout';
-import { FriendsList } from '@/components/FriendsList';
-import { UserProfile } from '@/components/UserProfile';
-import { useSocket } from '@/hooks/useSocket';
+import { useState } from "react";
+import { Sidebar } from "@/components/Sidebar";
+import { ChatLayout } from "@/components/chat/ChatLayout";
+import { UserProfile } from "@/components/UserProfile";
+import { useSocket } from "@/hooks/useSocket";
+import { FriendsList } from "@/components/friends/FriendsList";
 
-type Tab = 'home' | 'friends' | 'profile';
+type Tab = "home" | "friends" | "profile";
 
 const Home = () => {
-  const [activeTab, setActiveTab] = useState<Tab>('home');
+  const [activeTab, setActiveTab] = useState<Tab>("home");
   useSocket();
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'home':
+      case "home":
         return <ChatLayout />;
-      case 'friends':
+      case "friends":
         return <FriendsList />;
-      case 'profile':
+      case "profile":
         return <UserProfile />;
       default:
         return null;
@@ -27,9 +27,7 @@ const Home = () => {
   return (
     <div className="flex h-screen bg-background">
       <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
-      <main className="flex-1 overflow-hidden">
-        {renderContent()}
-      </main>
+      <main className="flex-1 overflow-hidden">{renderContent()}</main>
     </div>
   );
 };
