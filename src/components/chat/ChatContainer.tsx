@@ -1,10 +1,10 @@
-import { Suspense, lazy } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
-import { Loader2 } from 'lucide-react';
+import { ComponentType, Suspense, lazy } from "react";
+import { ErrorBoundary } from "react-error-boundary";
+import { Loader2 } from "lucide-react";
 
-const ChatWindow = lazy(() => import('./ChatWindow'));
-const MessageList = lazy(() => import('./MessageList'));
-const MessageInput = lazy(() => import('./MessageInput'));
+const ChatWindow = lazy<ComponentType<any>>(() => import("./ChatWindow"));
+const MessageList = lazy(() => import("./MessageList"));
+const MessageInput = lazy(() => import("./MessageInput"));
 
 const LoadingFallback = () => (
   <div className="h-full flex items-center justify-center">
@@ -14,7 +14,9 @@ const LoadingFallback = () => (
 
 const ErrorFallback = ({ error, resetErrorBoundary }: any) => (
   <div className="h-full flex flex-col items-center justify-center p-4">
-    <h2 className="text-xl font-semibold text-destructive mb-2">Something went wrong</h2>
+    <h2 className="text-xl font-semibold text-destructive mb-2">
+      Something went wrong
+    </h2>
     <p className="text-muted-foreground mb-4">{error.message}</p>
     <button
       onClick={resetErrorBoundary}
