@@ -1,55 +1,50 @@
-import { useEffect, useRef, useState } from 'react';
-import { Socket } from 'socket.io-client';
-import { Send } from 'lucide-react';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-} from '@/components/ui/form';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { ScrollArea } from './ui/scroll-area';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import useChatStore from '@/store/chatStore';
-import useAuthStore from '@/store/authStore';
-import axios from 'axios';
+import { useEffect, useRef, useState } from "react";
+import { Socket } from "socket.io-client";
+import { Send } from "lucide-react";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { ScrollArea } from "./ui/scroll-area";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import useChatStore from "@/store/chatStore";
+import useAuthStore from "@/store/authStore";
+import axios from "axios";
 
 interface ChatWindowProps {
   socket: Socket | null;
 }
 
 const messageSchema = z.object({
-  message: z.string().min(1, 'Message cannot be empty'),
+  message: z.string().min(1, "Message cannot be empty"),
 });
 
 export const ChatWindow = ({ socket }: ChatWindowProps) => {
   const form = useForm<z.infer<typeof messageSchema>>({
     resolver: zodResolver(messageSchema),
     defaultValues: {
-      message: '',
+      message: "",
     },
   });
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [isTyping, setIsTyping] = useState(false);
-  const [typingUser, setTypingUser] = useState('');
+  const [typingUser, setTypingUser] = useState("");
   const activeConversation = useChatStore((state) => state.activeConversation);
   const messages = useChatStore((state) => state.messages);
   const user = useAuthStore((state) => state.user);
   const token = useAuthStore((state) => state.token);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
     if (activeConversation) {
-      socket?.emit('joinRoom', activeConversation);
+      socket?.emit("joinRoom", activeConversation);
       return () => {
-        socket?.emit('leaveRoom', activeConversation);
+        socket?.emit("leaveRoom", activeConversation);
       };
     }
   }, [activeConversation, socket]);
@@ -59,7 +54,7 @@ export const ChatWindow = ({ socket }: ChatWindowProps) => {
   }, [messages]);
 
   useEffect(() => {
-    socket?.on('typing', ({ username, conversationId }) => {
+    socket?.on("typing", ({ username, conversationId }) => {
       if (conversationId === activeConversation) {
         setIsTyping(true);
         setTypingUser(username);
@@ -68,12 +63,12 @@ export const ChatWindow = ({ socket }: ChatWindowProps) => {
     });
 
     return () => {
-      socket?.off('typing');
+      socket?.off("typing");
     };
   }, [socket, activeConversation]);
 
   const emitTyping = () => {
-    socket?.emit('typing', {
+    socket?.emit("typing", {
       conversationId: activeConversation,
       username: user?.username,
     });
@@ -84,7 +79,7 @@ export const ChatWindow = ({ socket }: ChatWindowProps) => {
 
     try {
       await axios.post(
-        'http://localhost:3000/api/messages',
+        "http://localhost:3000/api/messages",
         {
           conversationId: activeConversation,
           content: data.message,
@@ -95,7 +90,7 @@ export const ChatWindow = ({ socket }: ChatWindowProps) => {
       );
       form.reset();
     } catch (error) {
-      console.error('Failed to send message:', error);
+      console.error("Failed to send message:", error);
     }
   };
 
@@ -115,14 +110,16 @@ export const ChatWindow = ({ socket }: ChatWindowProps) => {
             <div
               key={message._id}
               className={`flex ${
-                message.sender._id === user?._id ? 'justify-end' : 'justify-start'
+                message.sender._id === user?._id
+                  ? "justify-end"
+                  : "justify-start"
               }`}
             >
               <div
                 className={`max-w-[70%] rounded-lg p-3 ${
                   message.sender._id === user?._id
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-secondary'
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-secondary"
                 }`}
               >
                 <p className="text-sm">{message.content}</p>

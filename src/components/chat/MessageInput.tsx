@@ -1,24 +1,19 @@
-import { useEffect, useRef } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Send } from 'lucide-react';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-} from '@/components/ui/form';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { MessageFormData, messageSchema } from '@/lib/validators';
-import { useMessageInput } from '@/hooks/useMessageInput';
+import { useEffect, useRef } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Send } from "lucide-react";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { MessageFormData, messageSchema } from "@/lib/validators";
+import { useMessageInput } from "@/hooks/useMessageInput";
 
 export const MessageInput = () => {
   const { handleSubmit, emitTyping, inputRef } = useMessageInput();
   const form = useForm<MessageFormData>({
     resolver: zodResolver(messageSchema),
     defaultValues: {
-      message: '',
+      message: "",
     },
   });
 

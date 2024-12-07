@@ -1,25 +1,15 @@
-import { create } from 'zustand';
-
-interface Message {
-  _id: string;
-  content: string;
-  sender: {
-    _id: string;
-    username: string;
-    profilePic: string;
-  };
-  createdAt: string;
-  read: boolean;
-}
+import { create } from "zustand";
+import { Message, Conversation } from "@/types";
 
 interface ChatState {
-  activeConversation: string | null;
+  activeConversation: Conversation | null;
   messages: Message[];
   onlineUsers: string[];
   typingUsers: Record<string, string>;
-  setActiveConversation: (conversationId: string | null) => void;
+  setActiveConversation: (conversation: Conversation | null) => void;
   setMessages: (messages: Message[]) => void;
   addMessage: (message: Message) => void;
+  updateMessageStatus: (messageId: string, read: boolean) => void;
   setOnlineUsers: (users: string[]) => void;
   setTypingUser: (conversationId: string, username: string) => void;
   removeTypingUser: (conversationId: string) => void;
@@ -31,11 +21,17 @@ const useChatStore = create<ChatState>((set) => ({
   messages: [],
   onlineUsers: [],
   typingUsers: {},
-  setActiveConversation: (conversationId) => 
-    set({ activeConversation: conversationId }),
+  setActiveConversation: (conversation) =>
+    set({ activeConversation: conversation }),
   setMessages: (messages) => set({ messages }),
-  addMessage: (message) => 
+  addMessage: (message) =>
     set((state) => ({ messages: [...state.messages, message] })),
+  updateMessageStatus: (messageId, read) =>
+    set((state) => ({
+      messages: state.messages.map((msg) =>
+        msg._id === messageId ? { ...msg, read } : msg
+      ),
+    })),
   setOnlineUsers: (users) => set({ onlineUsers: users }),
   setTypingUser: (conversationId, username) =>
     set((state) => ({

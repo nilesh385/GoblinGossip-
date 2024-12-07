@@ -1,15 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { disconnectSocket } from "@/lib/socket";
-
-interface User {
-  _id: string;
-  email: string;
-  username: string;
-  fullName: string;
-  profilePic: string;
-  bio: string;
-}
+import { User } from "@/types";
 
 interface AuthState {
   user: User | null;
@@ -22,10 +14,9 @@ interface AuthState {
 
 const useAuthStore = create<AuthState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       user: null,
       token: null,
-      isLoading: true,
       error: null,
       setAuth: (user, token) => {
         localStorage.setItem("auth-token", token);
@@ -39,8 +30,8 @@ const useAuthStore = create<AuthState>()(
       updateUser: (user) => set({ user }),
     }),
     {
-      name: "auth-token",
-      partialize: (state) => ({ token: state.token }),
+      name: "auth-store",
+      partialize: (state) => ({ token: state.token, user: state.user }),
     }
   )
 );

@@ -1,13 +1,13 @@
-import { User, MoreVertical } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
+import { User, MoreVertical } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import useChatStore from '@/store/chatStore';
+} from "@/components/ui/dropdown-menu";
+import useChatStore from "@/store/chatStore";
 
 interface ChatHeaderProps {
   conversation: {
@@ -24,15 +24,15 @@ interface ChatHeaderProps {
   onLeaveGroup?: () => void;
 }
 
-export const ChatHeader = ({ 
-  conversation, 
+export const ChatHeader = ({
+  conversation,
   onViewProfile,
-  onLeaveGroup 
+  onLeaveGroup,
 }: ChatHeaderProps) => {
   const onlineUsers = useChatStore((state) => state.onlineUsers);
 
-  const isOnline = conversation.participants.some(
-    (participant) => onlineUsers.includes(participant._id)
+  const isOnline = conversation?.participants?.some((participant) =>
+    onlineUsers.includes(participant._id)
   );
 
   return (
@@ -40,24 +40,28 @@ export const ChatHeader = ({
       <div className="flex items-center gap-3">
         <Avatar>
           <AvatarImage
-            src={conversation.isGroup ? undefined : conversation.participants[0].profilePic}
-            alt={conversation.name || conversation.participants[0].username}
+            src={
+              conversation.isGroup
+                ? undefined
+                : conversation?.participants?.[0].profilePic
+            }
+            alt={conversation?.name || conversation?.participants?.[0].username}
           />
           <AvatarFallback>
             {conversation.isGroup ? (
               <User className="h-6 w-6" />
             ) : (
-              conversation.participants[0].username[0]
+              conversation?.participants?.[0].username[0]
             )}
           </AvatarFallback>
         </Avatar>
         <div>
           <h2 className="font-semibold">
-            {conversation.name || conversation.participants[0].username}
+            {conversation?.name || conversation?.participants?.[0].username}
           </h2>
           {!conversation.isGroup && (
             <p className="text-sm text-muted-foreground">
-              {isOnline ? 'Online' : 'Offline'}
+              {isOnline ? "Online" : "Offline"}
             </p>
           )}
         </div>
@@ -77,7 +81,10 @@ export const ChatHeader = ({
             </DropdownMenuItem>
           )}
           {conversation.isGroup && onLeaveGroup && (
-            <DropdownMenuItem onClick={onLeaveGroup} className="text-destructive">
+            <DropdownMenuItem
+              onClick={onLeaveGroup}
+              className="text-destructive"
+            >
               Leave Group
             </DropdownMenuItem>
           )}

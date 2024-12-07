@@ -1,25 +1,25 @@
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import axios from 'axios';
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import axios from "axios";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { UserPlus, Check, X } from 'lucide-react';
-import { toast } from 'sonner';
-import useAuthStore from '@/store/authStore';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserPlus, Check, X } from "lucide-react";
+import { toast } from "sonner";
+import useAuthStore from "@/store/authStore";
 
 const searchSchema = z.object({
-  query: z.string().min(1, 'Search query is required'),
+  query: z.string().min(1, "Search query is required"),
 });
 
 interface SearchedUser {
@@ -35,7 +35,7 @@ export const UserSearch = () => {
   const form = useForm<z.infer<typeof searchSchema>>({
     resolver: zodResolver(searchSchema),
     defaultValues: {
-      query: '',
+      query: "",
     },
   });
 
@@ -49,7 +49,7 @@ export const UserSearch = () => {
       );
       setSearchResults(response.data);
     } catch (error) {
-      toast.error('Failed to search users');
+      toast.error("Failed to search users");
     }
   };
 
@@ -62,9 +62,11 @@ export const UserSearch = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      toast.success('Friend request sent');
+      toast.success("Friend request sent");
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to send friend request');
+      toast.error(
+        error.response?.data?.message || "Failed to send friend request"
+      );
     }
   };
 
@@ -105,7 +107,9 @@ export const UserSearch = () => {
                 </Avatar>
                 <div>
                   <p className="font-medium">{user.fullName}</p>
-                  <p className="text-sm text-muted-foreground">@{user.username}</p>
+                  <p className="text-sm text-muted-foreground">
+                    @{user.username}
+                  </p>
                 </div>
               </div>
               <Button

@@ -1,49 +1,16 @@
-import { useEffect, useState } from "react";
+import { useConversations } from "@/hooks/useConversations";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ConversationItem } from "./ConversationItem";
+import { SearchDialog } from "../search/SearchDialog";
+import { FriendRequestsDialog } from "../friends/FriendRequestsDialog";
 import { Loader2 } from "lucide-react";
-import { conversations_api } from "@/lib/api";
 import useChatStore from "@/store/chatStore";
-import { toast } from "sonner";
-
-interface Conversation {
-  _id: string;
-  name?: string;
-  participants: {
-    _id: string;
-    username: string;
-    profilePic: string;
-  }[];
-  lastMessage?: {
-    content: string;
-    createdAt: string;
-  };
-  isGroup?: boolean;
-}
 
 export const ConversationList = () => {
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const { conversations, isLoading } = useConversations();
   const setActiveConversation = useChatStore(
     (state) => state.setActiveConversation
   );
-
-  useEffect(() => {
-    const fetchConversations = async () => {
-      try {
-        setIsLoading(true);
-        const response = await conversations_api.getAll();
-        setConversations(response.data);
-      } catch (error: any) {
-        console.log(error.message);
-        toast.error("Failed to load conversations");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchConversations();
-  }, []);
 
   if (isLoading) {
     return (
@@ -54,17 +21,33 @@ export const ConversationList = () => {
   }
 
   return (
-    <ScrollArea className="h-full">
-      <div className="p-4 space-y-2">
-        {conversations &&
-          conversations.map((conversation) => (
-            <ConversationItem
-              key={conversation._id}
-              conversation={conversation}
-              onClick={() => setActiveConversation(conversation)}
-            />
-          ))}
+    <div className="h-full flex flex-col">
+      <div className="p-4 border-b flex justify-between items-center">
+        <h2 className="text-xl font-semibold">Chats</h2>
+        <div className="flex items-center gap-2">
+          <FriendRequestsDialog />
+          <SearchDialog />
+        </div>
       </div>
-    </ScrollArea>
+      <ScrollArea className="flex-1">
+        <div className="p-2 space-y-2">
+          {console.log(conversations) as React.ReactNode}
+          {conversations &&
+            conversations?.length > 0 &&
+            conversations.map((conversation) => (
+              <ConversationItem
+                key={conversation._id}
+                conversation={conversation}
+                onClick={() => setActiveConversation(conversation)}
+              />
+            ))}
+          {conversations && conversations.length === 0 && (
+            <div className="text-center p-4 text-muted-foreground">
+              No conversations yet. Start chatting with your friends!
+            </div>
+          )}
+        </div>
+      </ScrollArea>
+    </div>
   );
 };

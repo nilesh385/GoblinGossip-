@@ -1,21 +1,21 @@
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { Plus, UserMinus, Users } from 'lucide-react';
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { Plus, UserMinus, Users } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from './ui/dialog';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { ScrollArea } from './ui/scroll-area';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import axios from 'axios';
-import useAuthStore from '@/store/authStore';
-import { toast } from 'sonner';
+} from "./ui/dialog";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import { ScrollArea } from "./ui/scroll-area";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import axios from "axios";
+import useAuthStore from "@/store/authStore";
+import { toast } from "sonner";
 
 interface GroupChatProps {
   groupId: string;
@@ -45,12 +45,12 @@ export const GroupChat = ({ groupId, members, isAdmin }: GroupChatProps) => {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        toast.success('Member added successfully');
+        toast.success("Member added successfully");
         setShowAddMember(false);
         reset();
       }
     } catch (error) {
-      toast.error('Failed to add member');
+      toast.error("Failed to add member");
     }
   };
 
@@ -62,9 +62,9 @@ export const GroupChat = ({ groupId, members, isAdmin }: GroupChatProps) => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      toast.success('Member removed successfully');
+      toast.success("Member removed successfully");
     } catch (error) {
-      toast.error('Failed to remove member');
+      toast.error("Failed to remove member");
     }
   };
 
@@ -89,7 +89,7 @@ export const GroupChat = ({ groupId, members, isAdmin }: GroupChatProps) => {
                   <Label htmlFor="username">Username</Label>
                   <Input
                     id="username"
-                    {...register('username', { required: true })}
+                    {...register("username", { required: true })}
                   />
                 </div>
                 <Button type="submit">Add Member</Button>

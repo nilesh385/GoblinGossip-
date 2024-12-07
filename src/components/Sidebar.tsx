@@ -1,5 +1,4 @@
 import { Home, Users, User, LogOutIcon } from "lucide-react";
-import { ThemeToggle } from "./ThemeToggle";
 import { Button } from "./ui/button";
 import useAuthStore from "@/store/authStore";
 import {
@@ -14,6 +13,7 @@ import {
   AlertDialogTrigger,
 } from "./ui/alert-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { ThemeToggle } from "./theme/ThemeToggle";
 
 interface SidebarProps {
   activeTab: string;
