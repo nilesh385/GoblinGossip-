@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Button } from "./ui/button";
-import { ScrollArea } from "./ui/scroll-area";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { ScrollArea } from "../ui/scroll-area";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import useChatStore from "@/store/chatStore";
 import useAuthStore from "@/store/authStore";
 import { users } from "@/lib/api";
 import { UserPlus2Icon } from "lucide-react";
+import { Button } from "../ui/button";
 
 interface Friend {
   _id: string;

@@ -13,7 +13,7 @@ export const useFriendRequests = () => {
       try {
         const response = await users.getPendingFriendRequests();
         console.log(response);
-        setRequests(response);
+        setRequests([response]);
       } catch (error) {
         toast.error("Failed to fetch friend requests");
       } finally {
