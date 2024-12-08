@@ -73,13 +73,13 @@ export const SearchResults = ({
               >
                 <UserPlus className="h-4 w-4" />
               </Button>
-              <Button
+              {/* <Button
                 variant="outline"
                 size="icon"
                 onClick={() => onStartChat(user._id)}
               >
                 <UserCheck className="h-4 w-4" />
-              </Button>
+              </Button> */}
             </div>
           </div>
         ))}

@@ -18,6 +18,7 @@ export const searchUsers = async (req, res) => {
           ],
         },
         { _id: { $ne: req.user._id } },
+        { _id: { $nin: [req.user.friends] } },
         { blockedUsers: { $nin: [req.user._id] } },
       ],
     }).select("username fullName profilePic");

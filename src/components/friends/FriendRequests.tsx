@@ -60,7 +60,7 @@ export const FriendRequests = () => {
       <h2 className="text-xl font-semibold">Friend Requests</h2>
       <ScrollArea className="h-[300px]">
         <div className="space-y-2">
-          {requests.map((request) => (
+          {requests?.map((request) => (
             <div
               key={request._id}
               className="flex items-center justify-between p-2 rounded-lg hover:bg-accent"

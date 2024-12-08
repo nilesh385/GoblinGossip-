@@ -15,7 +15,7 @@ import { conversations_api } from "@/lib/api";
 
 export const SearchDialog = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const setActiveConversation = useChatStore(
     (state) => state.setActiveConversation
