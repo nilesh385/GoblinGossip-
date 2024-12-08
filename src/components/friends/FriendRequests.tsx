@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Button } from './ui/button';
-import { ScrollArea } from './ui/scroll-area';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { Check, X } from 'lucide-react';
-import { toast } from 'sonner';
-import useAuthStore from '@/store/authStore';
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { Button } from "../ui/button";
+import { ScrollArea } from "../ui/scroll-area";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Check, X } from "lucide-react";
+import { toast } from "sonner";
+import useAuthStore from "@/store/authStore";
 
 interface FriendRequest {
   _id: string;
@@ -30,7 +30,7 @@ export const FriendRequests = () => {
         );
         setRequests(response.data.pendingFriendRequests);
       } catch (error) {
-        toast.error('Failed to fetch friend requests');
+        toast.error("Failed to fetch friend requests");
       }
     };
 
@@ -39,7 +39,7 @@ export const FriendRequests = () => {
     }
   }, [token, user]);
 
-  const handleRequest = async (userId: string, action: 'accept' | 'reject') => {
+  const handleRequest = async (userId: string, action: "accept" | "reject") => {
     try {
       await axios.post(
         `http://localhost:3000/api/users/friend-request/${userId}/${action}`,
@@ -67,7 +67,10 @@ export const FriendRequests = () => {
             >
               <div className="flex items-center gap-2">
                 <Avatar>
-                  <AvatarImage src={request.profilePic} alt={request.username} />
+                  <AvatarImage
+                    src={request.profilePic}
+                    alt={request.username}
+                  />
                   <AvatarFallback>{request.username[0]}</AvatarFallback>
                 </Avatar>
                 <div>
@@ -81,14 +84,14 @@ export const FriendRequests = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => handleRequest(request._id, 'accept')}
+                  onClick={() => handleRequest(request._id, "accept")}
                 >
                   <Check className="w-4 h-4" />
                 </Button>
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => handleRequest(request._id, 'reject')}
+                  onClick={() => handleRequest(request._id, "reject")}
                 >
                   <X className="w-4 h-4" />
                 </Button>

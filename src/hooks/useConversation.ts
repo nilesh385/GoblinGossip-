@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
-import { toast } from 'sonner';
-import { messages } from '@/lib/api';
-import { getSocket } from '@/lib/socket';
-import useChatStore from '@/store/chatStore';
+import { useEffect } from "react";
+import { toast } from "sonner";
+import { messages } from "@/lib/api";
+import { getSocket } from "@/lib/socket";
+import useChatStore from "@/store/chatStore";
 
 export const useConversation = () => {
   const activeConversation = useChatStore((state) => state.activeConversation);
@@ -13,26 +13,26 @@ export const useConversation = () => {
     if (!activeConversation) return;
 
     const socket = getSocket();
-    socket?.emit('joinRoom', activeConversation);
+    socket?.emit("joinRoom", activeConversation);
 
     const fetchMessages = async () => {
       try {
         const data = await messages.getMessages(activeConversation);
         setMessages(data);
       } catch (error) {
-        toast.error('Failed to load messages');
+        toast.error("Failed to load messages");
       }
     };
 
     fetchMessages();
 
-    socket?.on('newMessage', (message) => {
+    socket?.on("newMessage", (message) => {
       addMessage(message);
     });
 
     return () => {
-      socket?.emit('leaveRoom', activeConversation);
-      socket?.off('newMessage');
+      socket?.emit("leaveRoom", activeConversation);
+      socket?.off("newMessage");
     };
   }, [activeConversation, setMessages, addMessage]);
 

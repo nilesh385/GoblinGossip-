@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import useChatStore from "@/store/chatStore";
+import useAuthStore from "@/store/authStore";
 
 interface ChatHeaderProps {
   conversation: {
@@ -30,34 +31,33 @@ export const ChatHeader = ({
   onLeaveGroup,
 }: ChatHeaderProps) => {
   const onlineUsers = useChatStore((state) => state.onlineUsers);
+  const { user } = useAuthStore();
 
   const isOnline = conversation?.participants?.some((participant) =>
     onlineUsers.includes(participant._id)
   );
-
+  const otherUser = conversation?.participants?.find(
+    (participant) => participant._id !== user?._id
+  );
   return (
     <div className="border-b p-4 flex items-center justify-between bg-card">
       <div className="flex items-center gap-3">
         <Avatar>
           <AvatarImage
-            src={
-              conversation.isGroup
-                ? undefined
-                : conversation?.participants?.[0].profilePic
-            }
-            alt={conversation?.name || conversation?.participants?.[0].username}
+            src={conversation.isGroup ? undefined : otherUser?.profilePic}
+            alt={conversation?.name || otherUser?.username}
           />
           <AvatarFallback>
             {conversation.isGroup ? (
               <User className="h-6 w-6" />
             ) : (
-              conversation?.participants?.[0].username[0]
+              otherUser?.username[0]
             )}
           </AvatarFallback>
         </Avatar>
         <div>
           <h2 className="font-semibold">
-            {conversation?.name || conversation?.participants?.[0].username}
+            {conversation?.name || otherUser?.username}
           </h2>
           {!conversation.isGroup && (
             <p className="text-sm text-muted-foreground">

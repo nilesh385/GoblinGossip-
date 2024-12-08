@@ -59,8 +59,8 @@ export const UserProfile = () => {
       }
 
       const response = await users.updateProfile(formData);
-
-      setAuth(response.data, response.token!);
+      console.log(response);
+      setAuth(response.user, response.token!);
       setIsEditing(false);
       toast.success("Profile updated successfully");
     } catch (error) {

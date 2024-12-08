@@ -17,7 +17,9 @@ export const SearchDialog = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [results, setResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const setActiveConversation = useChatStore((state) => state.setActiveConversation);
+  const setActiveConversation = useChatStore(
+    (state) => state.setActiveConversation
+  );
 
   const handleStartChat = async (userId: string) => {
     try {
@@ -41,10 +43,7 @@ export const SearchDialog = () => {
           <DialogTitle>Search Users</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
-          <SearchBar
-            onResults={setResults}
-            onLoading={setIsLoading}
-          />
+          <SearchBar onResults={setResults} onLoading={setIsLoading} />
           <SearchResults
             results={results}
             isLoading={isLoading}

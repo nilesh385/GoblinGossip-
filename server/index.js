@@ -25,12 +25,6 @@ const io = new Server(httpServer, {
   },
 });
 
-// Connect to MongoDB
-mongoose
-  .connect(config.mongoUri)
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error("MongoDB connection error:", err));
-
 // Middleware
 app.use("/uploads/", express.static("uploads/"));
 app.use(
@@ -72,10 +66,17 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start server
+// Connect to MongoDB
 const PORT = config.port;
-httpServer.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+mongoose
+  .connect(config.mongoUri)
+  .then(() => {
+    console.log("Connected to MongoDB");
+    // Start server
+    httpServer.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  })
+  .catch((err) => console.error("MongoDB connection error:", err));
 
 export default app;

@@ -4,14 +4,18 @@ import { toast } from 'sonner';
 let socket: Socket | null = null;
 
 export const initializeSocket = (token: string) => {
-  if (socket) return socket;
+  if (socket?.connected) return socket;
 
   socket = io(import.meta.env.VITE_API_URL, {
     auth: { token },
+    reconnection: true,
+    reconnectionDelay: 1000,
+    reconnectionAttempts: 5,
   });
 
   socket.on('connect', () => {
     console.log('Connected to socket server');
+    socket?.emit('joinConversations');
   });
 
   socket.on('connect_error', (error) => {
@@ -19,11 +23,19 @@ export const initializeSocket = (token: string) => {
     toast.error('Connection error. Please try again.');
   });
 
+  socket.on('reconnect_attempt', (attemptNumber) => {
+    console.log(`Reconnection attempt ${attemptNumber}`);
+  });
+
+  socket.on('reconnect_failed', () => {
+    toast.error('Failed to reconnect. Please refresh the page.');
+  });
+
   return socket;
 };
 
 export const disconnectSocket = () => {
-  if (socket) {
+  if (socket?.connected) {
     socket.disconnect();
     socket = null;
   }

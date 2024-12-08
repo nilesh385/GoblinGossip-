@@ -41,7 +41,7 @@ export const MessageList = () => {
   }
 
   return (
-    <ScrollArea className="flex-1 p-4">
+    <ScrollArea className="flex-1 p-4 overflow-auto">
       <div className="space-y-4">
         {messages &&
           messages.length > 0 &&

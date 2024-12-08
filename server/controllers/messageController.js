@@ -1,11 +1,17 @@
-import Message from '../models/Message.js';
-import Conversation from '../models/Conversation.js';
-import { createError } from '../utils/errorHandler.js';
+import Message from "../models/Message.js";
+import Conversation from "../models/Conversation.js";
+import { createError } from "../utils/errorHandler.js";
 
 export const getMessages = async (req, res) => {
   try {
     const { conversationId } = req.params;
-    const { limit = 50, offset = 0, sort = 'desc', startDate, endDate } = req.query;
+    const {
+      limit = 50,
+      offset = 0,
+      sort = "desc",
+      startDate,
+      endDate,
+    } = req.query;
 
     // Verify user is participant in conversation
     const conversation = await Conversation.findOne({
@@ -14,7 +20,7 @@ export const getMessages = async (req, res) => {
     });
 
     if (!conversation) {
-      throw createError(403, 'Not authorized to access this conversation');
+      throw createError(403, "Not authorized to access this conversation");
     }
 
     // Build query
@@ -30,10 +36,10 @@ export const getMessages = async (req, res) => {
 
     // Get messages with pagination
     const messages = await Message.find(query)
-      .sort({ createdAt: sort === 'desc' ? -1 : 1 })
+      .sort({ createdAt: 1 })
       .skip(Number(offset))
       .limit(Number(limit))
-      .populate('sender', 'username fullName profilePic');
+      .populate("sender", "username fullName profilePic");
 
     res.json({
       messages,
@@ -45,17 +51,17 @@ export const getMessages = async (req, res) => {
       },
     });
   } catch (error) {
-    throw createError(500, 'Failed to fetch messages', error);
+    throw createError(500, "Failed to fetch messages", error);
   }
 };
 
 export const sendMessage = async (req, res) => {
   try {
-    const { conversationId, content, type = 'text' } = req.body;
+    const { conversationId, content, type = "text" } = req.body;
 
     // Validate message content
     if (!content?.trim()) {
-      throw createError(400, 'Message content cannot be empty');
+      throw createError(400, "Message content cannot be empty");
     }
 
     // Verify user is participant in conversation
@@ -65,7 +71,10 @@ export const sendMessage = async (req, res) => {
     });
 
     if (!conversation) {
-      throw createError(403, 'Not authorized to send messages in this conversation');
+      throw createError(
+        403,
+        "Not authorized to send messages in this conversation"
+      );
     }
 
     const message = new Message({
@@ -83,24 +92,27 @@ export const sendMessage = async (req, res) => {
       updatedAt: new Date(),
     });
 
-    const populatedMessage = await message.populate('sender', 'username fullName profilePic');
+    const populatedMessage = await message.populate(
+      "sender",
+      "username fullName profilePic"
+    );
 
     // Emit socket event
-    req.io.to(conversationId).emit('newMessage', populatedMessage);
+    req.io.to(conversationId).emit("newMessage", populatedMessage);
 
     res.status(201).json(populatedMessage);
   } catch (error) {
-    throw createError(500, 'Failed to send message', error);
+    throw createError(500, "Failed to send message", error);
   }
 };
 
 export const markMessageAsRead = async (req, res) => {
   try {
     const { messageId } = req.params;
-    
+
     const message = await Message.findById(messageId);
     if (!message) {
-      throw createError(404, 'Message not found');
+      throw createError(404, "Message not found");
     }
 
     // Verify user is participant in conversation
@@ -110,7 +122,7 @@ export const markMessageAsRead = async (req, res) => {
     });
 
     if (!conversation) {
-      throw createError(403, 'Not authorized to access this message');
+      throw createError(403, "Not authorized to access this message");
     }
 
     message.read = true;
@@ -118,6 +130,6 @@ export const markMessageAsRead = async (req, res) => {
 
     res.json(message);
   } catch (error) {
-    throw createError(500, 'Failed to mark message as read', error);
+    throw createError(500, "Failed to mark message as read", error);
   }
 };

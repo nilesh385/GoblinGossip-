@@ -5,26 +5,30 @@ import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
 import Home from "@/pages/Home";
 import { ThemeProvider } from "./components/theme/theme-provider";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 function App() {
+  const queryClient = new QueryClient();
   return (
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <Router>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route
-            path="/*"
-            element={
-              <AuthGuard>
-                <Home />
-              </AuthGuard>
-            }
-          />
-        </Routes>
-      </Router>
-      <Toaster />
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <Router>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route
+              path="/*"
+              element={
+                <AuthGuard>
+                  <Home />
+                </AuthGuard>
+              }
+            />
+          </Routes>
+        </Router>
+        <Toaster />
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }
 

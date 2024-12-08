@@ -1,7 +1,7 @@
-import { useEffect, useRef } from 'react';
-import { io, Socket } from 'socket.io-client';
-import useAuthStore from '@/store/authStore';
-import useChatStore from '@/store/chatStore';
+import { useEffect, useRef } from "react";
+import { io, Socket } from "socket.io-client";
+import useAuthStore from "@/store/authStore";
+import useChatStore from "@/store/chatStore";
 
 export const useSocket = () => {
   const socketRef = useRef<Socket | null>(null);
@@ -12,19 +12,19 @@ export const useSocket = () => {
   useEffect(() => {
     if (!token) return;
 
-    socketRef.current = io('http://localhost:3000', {
+    socketRef.current = io("http://localhost:3000", {
       auth: { token },
     });
 
-    socketRef.current.on('connect', () => {
-      console.log('Connected to socket server');
+    socketRef.current.on("connect", () => {
+      console.log("Connected to socket server");
     });
 
-    socketRef.current.on('onlineUsers', (users) => {
+    socketRef.current.on("onlineUsers", (users) => {
       setOnlineUsers(users);
     });
 
-    socketRef.current.on('newMessage', (message) => {
+    socketRef.current.on("newMessage", (message) => {
       addMessage(message);
     });
 

@@ -19,8 +19,9 @@ export const ChatWindow = () => {
 
       const fetchMessages = async () => {
         try {
-          const data = await messages.getMessages(activeConversation);
-          setMessages(data);
+          const data = await messages.getMessages(activeConversation._id);
+          console.log(data);
+          setMessages(data.messages);
         } catch (error) {
           toast.error("Failed to load messages");
         }
@@ -43,7 +44,7 @@ export const ChatWindow = () => {
   };
 
   return (
-    <div className="h-full flex flex-col bg-background">
+    <div className="h-full flex flex-col bg-background overflow-hidden">
       {activeConversation ? (
         <>
           <ChatHeader

@@ -1,7 +1,6 @@
-import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Send } from "lucide-react";
+import { Loader2, Send } from "lucide-react";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +8,7 @@ import { MessageFormData, messageSchema } from "@/lib/validators";
 import { useMessageInput } from "@/hooks/useMessageInput";
 
 export const MessageInput = () => {
-  const { handleSubmit, emitTyping, inputRef } = useMessageInput();
+  const { handleSubmit, emitTyping, inputRef, loading } = useMessageInput();
   const form = useForm<MessageFormData>({
     resolver: zodResolver(messageSchema),
     defaultValues: {
@@ -32,15 +31,19 @@ export const MessageInput = () => {
                 <Input
                   placeholder="Type a message..."
                   onKeyDown={emitTyping}
-                  ref={inputRef}
                   {...field}
+                  ref={inputRef}
                 />
               </FormControl>
             </FormItem>
           )}
         />
         <Button type="submit" size="icon" variant="default">
-          <Send className="h-4 w-4" />
+          {loading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Send className="h-4 w-4" />
+          )}
           <span className="sr-only">Send message</span>
         </Button>
       </form>

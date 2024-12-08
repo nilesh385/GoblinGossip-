@@ -59,6 +59,7 @@ export const messages = {
 export const conversations_api = {
   getAll: async () => {
     const response = await api.get("/api/conversations");
+    console.log(response.data);
     return response.data;
   },
   create: async (participantId: string) => {
