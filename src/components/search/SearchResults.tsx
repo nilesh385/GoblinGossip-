@@ -1,21 +1,17 @@
-import { UserPlus, UserCheck, Loader2 } from "lucide-react";
+import { UserPlus, Loader2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { users } from "@/lib/api";
 import { toast } from "sonner";
+import ToolTip_ from "../ToolTip_";
 
 interface SearchResultsProps {
   results: any[];
   isLoading: boolean;
-  onStartChat: (userId: string) => void;
 }
 
-export const SearchResults = ({
-  results,
-  isLoading,
-  onStartChat,
-}: SearchResultsProps) => {
+export const SearchResults = ({ results, isLoading }: SearchResultsProps) => {
   const handleAddFriend = async (userId: string) => {
     try {
       await users.sendFriendRequest(userId);
@@ -66,20 +62,20 @@ export const SearchResults = ({
               </div>
             </div>
             <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => handleAddFriend(user._id)}
-              >
-                <UserPlus className="h-4 w-4" />
-              </Button>
-              {/* <Button
-                variant="outline"
-                size="icon"
-                onClick={() => onStartChat(user._id)}
-              >
-                <UserCheck className="h-4 w-4" />
-              </Button> */}
+              <ToolTip_ content={"Send friend request"}>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => handleAddFriend(user._id)}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <UserPlus className="h-4 w-4" />
+                  )}
+                </Button>
+              </ToolTip_>
             </div>
           </div>
         ))}

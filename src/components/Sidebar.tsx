@@ -14,6 +14,7 @@ import {
 } from "./ui/alert-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { ThemeToggle } from "./theme/ThemeToggle";
+import ToolTip_ from "./ToolTip_";
 
 interface SidebarProps {
   activeTab: string;
@@ -27,10 +28,12 @@ export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
   return (
     <div className="w-20 border-r bg-card flex flex-col items-center py-4 gap-4">
       <div className="w-12 h-12 rounded-full overflow-hidden mb-4">
-        <Avatar>
-          <AvatarImage src={user?.profilePic} />
-          <AvatarFallback>{user?.username[0].toUpperCase()}</AvatarFallback>
-        </Avatar>
+        <ToolTip_ content={[user?.fullName!, "-", user?.username!]}>
+          <Avatar>
+            <AvatarImage src={user?.profilePic} />
+            <AvatarFallback>{user?.username[0].toUpperCase()}</AvatarFallback>
+          </Avatar>
+        </ToolTip_>
       </div>
 
       <Button
@@ -61,9 +64,11 @@ export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
         <ThemeToggle />
         <AlertDialog>
           <AlertDialogTrigger>
-            <Button variant="destructive" size="icon">
-              <LogOutIcon className="h-5 w-5" />
-            </Button>
+            <ToolTip_ content="Logout">
+              <Button variant="destructive" size="icon">
+                <LogOutIcon className="h-5 w-5" />
+              </Button>
+            </ToolTip_>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
