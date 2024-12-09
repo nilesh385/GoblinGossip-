@@ -74,10 +74,6 @@ git push origin feature/new-feature
 
 5.  Create a pull request.
 
-## License
-
-(Specify the license used for the project, e.g., MIT License)
-
 # .env file variables
 
 VITE_API_URL= your-backend-url

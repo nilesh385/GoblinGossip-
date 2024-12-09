@@ -34,7 +34,12 @@ export const updateProfile = async (req, res) => {
     const { fullName, bio } = req.body;
     const updates = { fullName, bio };
 
+    const currentUser = await User.findById(req.user._id);
     if (req.file) {
+      if (currentUser.profilePic) {
+        const publicId = currentUser.profilePic.split("/").pop().split(".")[0];
+        await cloudinary.uploader.destroy(publicId);
+      }
       const result = await cloudinary.uploader.upload(req.file.path, {
         folder: "chat-app/profiles",
         transformation: [{ width: 500, height: 500, crop: "fill" }],
