@@ -114,4 +114,49 @@ export const users = {
   },
 };
 
+export const groups = {
+  create: async (data: { name: string; description?: string }) => {
+    const response = await api.post("/api/groups", data);
+    return response.data;
+  },
+
+  getMembers: async (groupId: string) => {
+    const response = await api.get(`/api/groups/${groupId}/members`);
+    return response.data;
+  },
+
+  updateMemberRole: async (groupId: string, memberId: string, role: string) => {
+    const response = await api.patch(
+      `/api/groups/${groupId}/members/${memberId}/role`,
+      { role }
+    );
+    return response.data;
+  },
+
+  removeMember: async (groupId: string, memberId: string) => {
+    const response = await api.delete(
+      `/api/groups/${groupId}/members/${memberId}`
+    );
+    return response.data;
+  },
+
+  updateSettings: async (groupId: string, settings: any) => {
+    const response = await api.patch(
+      `/api/groups/${groupId}/settings`,
+      settings
+    );
+    return response.data;
+  },
+
+  join: async (groupId: string) => {
+    const response = await api.post(`/api/groups/${groupId}/join`);
+    return response.data;
+  },
+
+  leave: async (groupId: string) => {
+    const response = await api.post(`/api/groups/${groupId}/leave`);
+    return response.data;
+  },
+};
+
 export default api;

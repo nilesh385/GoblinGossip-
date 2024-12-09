@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import cloudinary from "../config/cloudinary.js";
 import config from "../config/env.js";
+import bcrypt from "bcrypt";
 
 const JWT_SECRET = config.jwtSecret;
 
@@ -23,6 +24,7 @@ export const signup = async (req, res) => {
       });
     }
 
+    const hashedPass = await bcrypt.hash(password, 12);
     let profilePicUrl = "";
 
     // Handle profile picture upload
@@ -45,7 +47,7 @@ export const signup = async (req, res) => {
       email,
       username,
       fullName,
-      password, // In production, hash the password
+      password: hashedPass,
       profilePic: profilePicUrl,
       bio,
     });
@@ -78,8 +80,8 @@ export const login = async (req, res) => {
       return res.status(401).json({ message: "User not found" });
     }
 
-    // In production, use proper password comparison
-    if (user.password !== password) {
+    const comparedPass = await bcrypt.compare(password, user.password);
+    if (password !== comparedPass) {
       return res.status(401).json({ message: "Invalid password" });
     }
 
@@ -94,17 +96,5 @@ export const login = async (req, res) => {
   } catch (error) {
     console.error("Login error:", error);
     res.status(500).json({ message: "Server error during login" });
-  }
-};
-
-export const validateToken = async (req, res) => {
-  try {
-    const user = await User.findById(req.user._id).select("-password");
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    res.json({ user });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
   }
 };
